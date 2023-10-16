@@ -1,0 +1,24 @@
+{
+  "plugins": [
+    "prettier-plugin-organize-imports"
+  ],
+  "semi": false,
+  "tabWidth": 2,
+  "printWidth": 80,
+  "singleQuote": true,
+  "insertPragma": false,
+  "requirePragma": false,
+  "jsxSingleQuote": true,
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "singleAttributePerLine": true,
+  "vueIndentScriptAndStyle": false,
+  "endOfLine": "lf",
+  "proseWrap": "always",
+  "arrowParens": "always",
+  "trailingComma": "all",
+  "quoteProps": "as-needed",
+  "htmlWhitespaceSensitivity": "css",
+  "embeddedLanguageFormatting": "auto",
+  "organizeImportsSkipDestructiveCodeActions": true
+}
