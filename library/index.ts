@@ -1,4 +1,4 @@
-import type { Lockable as LockableInterface } from './lockable'
+import type { Lockable as LockableInterface, LockableOptions } from './lockable'
 import { LockableBrowser } from './lockable-browser'
 import { LockableIDB } from './lockable-idb'
 
@@ -10,8 +10,8 @@ import { LockableIDB } from './lockable-idb'
  */
 export const Lockable = (
   name: string,
-  hangTimeout?: number,
+  options?: LockableOptions,
 ): LockableInterface =>
   LockableBrowser.isSupported()
-    ? new LockableBrowser(name, hangTimeout)
-    : new LockableIDB(name, hangTimeout)
+    ? new LockableBrowser(name, options)
+    : new LockableIDB(name, options)

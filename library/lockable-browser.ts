@@ -1,4 +1,13 @@
-import type { Lockable, LockableLockCallback } from './lockable'
+import type {
+  Lockable,
+  LockableLockCallback,
+  LockableLockRequestOptions,
+  LockableOptions,
+} from './lockable'
+import {
+  DEFAULT_HANG_TIMOEUT,
+  DEFAULT_WAIT_TIMEOUT,
+} from './lockable-default-values'
 import { LockableHangTimeoutError } from './lockable-hang-timeout-error'
 
 /**
@@ -8,18 +17,26 @@ import { LockableHangTimeoutError } from './lockable-hang-timeout-error'
  */
 export class LockableBrowser implements Lockable {
   private name: string
+  private waitTimout: number
   private hangTimeout: number
 
   static isSupported() {
     return !!window.navigator.locks
   }
 
-  constructor(name: string, hangTimeout = 5 * 1000) {
+  constructor(
+    name: string,
+    {
+      waitTimout = DEFAULT_WAIT_TIMEOUT,
+      hangTimeout = DEFAULT_HANG_TIMOEUT,
+    }: LockableOptions = {},
+  ) {
     this.name = name
+    this.waitTimout = waitTimout
     this.hangTimeout = hangTimeout
   }
 
-  private rejectHanged() {
+  private rejectHangedCallback() {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         reject(new LockableHangTimeoutError())
@@ -27,11 +44,23 @@ export class LockableBrowser implements Lockable {
     })
   }
 
-  async request(callback: LockableLockCallback) {
-    window.navigator.locks.request(this.name, { ifAvailable: true }, (lock) => {
-      if (lock) {
-        return Promise.race([this.rejectHanged(), callback()])
-      }
-    })
+  async request(
+    { isWaiting }: LockableLockRequestOptions,
+    callback: LockableLockCallback,
+  ) {
+    let isStillWaiting = true
+    setTimeout(() => {
+      isStillWaiting = false
+    }, this.waitTimout)
+
+    window.navigator.locks.request(
+      this.name,
+      { ifAvailable: !isWaiting },
+      (lock) => {
+        if (lock && isStillWaiting) {
+          return Promise.race([this.rejectHangedCallback(), callback()])
+        }
+      },
+    )
   }
 }

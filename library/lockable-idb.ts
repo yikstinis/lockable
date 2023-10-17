@@ -1,4 +1,14 @@
-import type { Lockable, LockableLockCallback } from './lockable'
+import type {
+  Lockable,
+  LockableLockCallback,
+  LockableLockRequestOptions,
+  LockableOptions,
+} from './lockable'
+import {
+  DEFAULT_HANG_TIMOEUT,
+  DEFAULT_WAIT_TICK_DELAY,
+  DEFAULT_WAIT_TIMEOUT,
+} from './lockable-default-values'
 import { LockableHangTimeoutError } from './lockable-hang-timeout-error'
 
 /**
@@ -6,21 +16,32 @@ import { LockableHangTimeoutError } from './lockable-hang-timeout-error'
  * If Web Locks API is not available for some reason, this one should be used.
  *
  * We can not use localStorage instead of IndexedDB.
- * It (localStorage) has undefined behaviour, when working with multiple tabs/windows.
+ * It (localStorage) has undefined behaviour, when working with multiple tabs.
  */
 export class LockableIDB implements Lockable {
+  private db: Promise<IDBDatabase>
+
   private dbName = 'lockable-db'
   private dbVersion = 1
   private dbStoreName = 'lockable-db-locks'
   private dbTransactionMode: IDBTransactionMode = 'readwrite'
 
   private name: string
+  private waitTimout: number
+  private waitTickDelay: number
   private hangTimeout: number
 
-  private db: Promise<IDBDatabase>
-
-  constructor(name: string, hangTimeout = 5 * 1000) {
+  constructor(
+    name: string,
+    {
+      waitTimout = DEFAULT_WAIT_TIMEOUT,
+      waitTickDelay = DEFAULT_WAIT_TICK_DELAY,
+      hangTimeout = DEFAULT_HANG_TIMOEUT,
+    }: LockableOptions = {},
+  ) {
     this.name = name
+    this.waitTimout = waitTimout
+    this.waitTickDelay = waitTickDelay
     this.hangTimeout = hangTimeout
     this.db = this.openDb()
   }
@@ -44,7 +65,7 @@ export class LockableIDB implements Lockable {
     return this.promisifyDBRequest<IDBDatabase>(openRequest)
   }
 
-  private async requestLockIfAvailable(): Promise<boolean> {
+  private async requestLockOnce(): Promise<boolean> {
     const db = await this.db
     const transaction = db.transaction(this.dbStoreName, this.dbTransactionMode)
     const store = transaction.objectStore(this.dbStoreName)
@@ -64,6 +85,24 @@ export class LockableIDB implements Lockable {
     return false
   }
 
+  private waitRequestTickDelay(): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, this.waitTickDelay)
+    })
+  }
+
+  private async requestLock(isWaiting: boolean): Promise<boolean> {
+    if (!isWaiting) return this.requestLockOnce()
+    const waitingExpiresAt = Date.now() + this.waitTimout
+    while (Date.now() < waitingExpiresAt) {
+      if (await this.requestLockOnce()) {
+        return true
+      }
+      await this.waitRequestTickDelay()
+    }
+    return false
+  }
+
   private async releaseLock(): Promise<void> {
     const db = await this.db
     const transaction = db.transaction(this.dbStoreName, this.dbTransactionMode)
@@ -71,7 +110,7 @@ export class LockableIDB implements Lockable {
     await this.promisifyDBRequest<number>(store.delete(this.name))
   }
 
-  private rejectHanged() {
+  private rejectHangedCallback() {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         reject(new LockableHangTimeoutError())
@@ -79,10 +118,13 @@ export class LockableIDB implements Lockable {
     })
   }
 
-  public async request(callback: LockableLockCallback) {
-    if (await this.requestLockIfAvailable()) {
+  public async request(
+    { isWaiting }: LockableLockRequestOptions,
+    callback: LockableLockCallback,
+  ) {
+    if (await this.requestLock(isWaiting)) {
       try {
-        await Promise.race([this.rejectHanged(), callback()])
+        await Promise.race([this.rejectHangedCallback(), callback()])
       } finally {
         await this.releaseLock()
       }

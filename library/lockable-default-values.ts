@@ -1,0 +1,3 @@
+export const DEFAULT_WAIT_TIMEOUT = 3 * 1000
+export const DEFAULT_WAIT_TICK_DELAY = 250
+export const DEFAULT_HANG_TIMOEUT = 10 * 1000
