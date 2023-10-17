@@ -1,9 +1,8 @@
 # Lockable
 
-Minimalistic lock implementation with fallback for browsers not supporting
-[Web Locks API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Locks_API).
-Fallback implementation uses IndexedDB inside. That is the reason of required
-timeouts, we have. Some might consider this an advantage.
+Minimalistic lock implementation with fallback for web browsers lacking support
+for the Web Locks API. Fallback implementation uses IndexedDB inside. That is
+the reason of required timeouts, we have. Some might consider this an advantage.
 
 ## Why do not use localStorage?
 
@@ -17,9 +16,12 @@ transactions instead.
 ```typescript
 import { Lockable } from 'lockable'
 
-// Try to avoid creating multiple instances if possible
+// Try to avoid creating multiple instances if possible.
+// Each instance opens own IndexedDB connection.
 const lockable = Lockable(
-  'lockable', // Any lockable name
+  // Any lockable name.
+  // Same name = same lock.
+  'lockable',
   {
     /**
      * An amount of milliseconds, lockable waits for taken lock to release.
