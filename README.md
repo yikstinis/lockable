@@ -15,7 +15,7 @@ transactions instead.
 ## Usage example
 
 ```typescript
-import { Lockable } from '<path_to_lockable>'
+import { Lockable } from 'lockable'
 
 // Try to avoid creating multiple instances if possible
 const lockable = Lockable(

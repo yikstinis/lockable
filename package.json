@@ -1,6 +1,18 @@
 {
+  "name": "lockable",
+  "version": "0.0.1",
+  "description": "Minimalistic Web Locks API with IndexedDB fallback.",
+  "repository": "https://github.com/yikstinis/lockable.git",
+  "author": "Mark Sinitskiy <yikstinis@gmail.com>",
+  "license": "MIT",
+  "types": "library/lockable.d.d.ts",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
   "devDependencies": {
     "prettier": "^3.0.3",
-    "prettier-plugin-organize-imports": "^3.2.3"
+    "prettier-plugin-organize-imports": "^3.2.3",
+    "typescript": "^5.2.2"
   }
 }
