@@ -14,7 +14,7 @@ transactions instead.
 ## Usage example
 
 ```typescript
-import { Lockable } from 'lockable'
+import { Lockable } from '<PATH_TO_LOCKABLE>'
 
 // Try to avoid creating multiple instances if possible.
 // Each instance opens own IndexedDB connection.
