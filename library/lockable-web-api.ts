@@ -11,11 +11,11 @@ import {
 import { LockableHangTimeoutError } from './lockable-hang-timeout-error'
 
 /**
- * Lockable Browser implementation.
+ * Lockable Web API implementation.
  * This implementation is recommended and prefered.
  * Use it, if Web Locks API is supported and available.
  */
-export class LockableBrowser implements Lockable {
+export class LockableWebAPI implements Lockable {
   private name: string
   private waitTimout: number
   private hangTimeout: number

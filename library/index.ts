@@ -1,6 +1,6 @@
 import type { Lockable as LockableInterface, LockableOptions } from './lockable'
-import { LockableBrowser } from './lockable-browser'
 import { LockableIDB } from './lockable-idb'
+import { LockableWebAPI } from './lockable-web-api'
 
 /**
  * Lockable factory function.
@@ -12,6 +12,6 @@ export const Lockable = (
   name: string,
   options?: LockableOptions,
 ): LockableInterface =>
-  LockableBrowser.isSupported()
-    ? new LockableBrowser(name, options)
+  LockableWebAPI.isSupported()
+    ? new LockableWebAPI(name, options)
     : new LockableIDB(name, options)
