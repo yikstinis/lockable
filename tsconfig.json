@@ -4,7 +4,8 @@
     "outDir": "build",
     "module": "commonjs",
     "target": "es5",
-    "lib": ["es6", "dom"],
+    "lib": ["dom", "esnext"],
     "strict": true
-  }
+  },
+  "exclude": ["node_modules", "jest.config.ts"]
 }
