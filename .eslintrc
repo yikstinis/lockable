@@ -1,0 +1,49 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "extends": ["standard"],
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "no-undef": 0,
+    "linebreak-style": 2,
+    "no-unused-vars": 0,
+    "@typescript-eslint/no-unused-vars": 2,
+    "padded-blocks": 0,
+    "max-len": [
+      2,
+      {
+        "code": 80,
+        "tabWidth": 2,
+        "ignoreComments": true,
+        "ignoreTrailingComments": true
+      }
+    ],
+    "comma-dangle": 0,
+    "space-before-function-paren": 0,
+    "sort-imports": [
+      2,
+      {
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
+        "allowSeparatedGroups": false,
+        "ignoreDeclarationSort": true,
+        "ignoreMemberSort": false,
+        "ignoreCase": false
+      }
+    ],
+    "import/order": [
+      2,
+      {
+        "alphabetize": {
+          "caseInsensitive": true,
+          "order": "asc"
+        },
+        "groups": [
+          ["builtin", "external", "internal"],
+          ["parent"],
+          ["sibling"]
+        ],
+        "newlines-between": "never"
+      }
+    ]
+  }
+}

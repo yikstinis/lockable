@@ -4,9 +4,9 @@ Minimalistic lock implementation with fallback for web browsers lacking support
 for the Web Locks API. Fallback implementation uses IndexedDB inside. That is
 the reason of required timeouts, we have. Some might consider this an advantage.
 
-## Why do not use localStorage?
+## Why not to use localStorage instead?
 
-In most modern browsers you will face undefined (depends on implementation
+In most modern browsers you will face undefined (depending on implementation
 inside the browser) localStorage behavior during concurrent writes and reads
 from multiple tabs/windows. To avoid this situation, we use IndexedDB with its
 transactions instead.
